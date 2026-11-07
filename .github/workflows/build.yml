@@ -21,11 +21,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # Экшен сам корректно примет лицензии для той версии sdkmanager, которую скачает
+      # Используем обновленную 4-ю версию экшена без пакета 'tools'
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
           accept-android-sdk-licenses: true
+          packages: 'platform-tools build-tools;34.0.0 platforms;android-34'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
