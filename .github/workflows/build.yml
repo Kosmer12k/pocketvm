@@ -21,18 +21,15 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # ВАЖНО: Этот шаг автоматически принимает все лицензии Android SDK
-      - name: Accept Android SDK Licenses
-        run: |
-          mkdir -p mkdir -p "$ANDROID_HOME/licenses"
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
-
-      # Использовавшийся вами экшен теперь отработает без зависания
+      # Экшен сам корректно примет лицензии для той версии sdkmanager, которую скачает
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug
+        
