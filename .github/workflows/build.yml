@@ -14,6 +14,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Устанавливаем системные зависимости для fetch_engine.py (dpkg-deb, readelf, apt-get download)
+      - name: Install System Dependencies for Engine Builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg binutils apt-utils
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -27,13 +33,18 @@ jobs:
           accept-android-sdk-licenses: true
           packages: 'platform-tools build-tools;34.0.0 platforms;android-34'
 
+      # Запускаем скрипт сборки движка. Теперь у него есть все утилиты.
+      - name: Fetch and Assemble VM Engine Components
+        run: |
+          python3 ci/fetch_engine.py
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug
 
-      # Загружаем чистый APK-файл без лишнего сжатия в ZIP
+      # Сохраняем готовый APK, внутри которого теперь ЗАПЕЧЕН собранный runtime.zip
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
